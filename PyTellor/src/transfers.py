@@ -1,7 +1,8 @@
 from itertools import chain
-
+import os
 import pandas as pd
 import requests
+from tqdm import tqdm
 
 from keys import *
 
@@ -9,16 +10,34 @@ from keys import *
 start_block = 8000000
 last_block = w3.eth.blockNumber
 entries = []
-# transfers = tellor_core.events.Transfer.createFilter(fromBlock=start_block)
+
 
 # events = transfers.get_all_entries()
-for i in range(start_block, last_block, 2000):
+for i in tqdm(range(start_block, last_block, 2000)):
 
     transfers = tellor_core.events.Transfer.createFilter(fromBlock=i, toBlock=i + 2000)
     new_events = transfers.get_all_entries()
-    entries.append(new_events)
-    print(len(new_events))
+    for j in new_events:
+        _from = j['args']['_from']
+        _to = j['args']['_to']
+        _value = j['args']['_value']
+        tx_hash = j['transactionHash'].hex()
+        address = j['address']
+        eth_block_number = j['blockNumber']
+        entry = dict(_from=_from, _to=_to,
+                     _value=_value, tx_hash=tx_hash,
+                     address=address, eth_block_number=eth_block_number,
+                    #  gas_price=gas_price,
+                    #  block_timestamp=block_timestamp
+                     )
+        entries.append(entry)
     
-print(len(entries))
+df = pd.DataFrame(entries)
 
-# print(events[:5])
+df['gas_price'] = df['tx_hash'].apply(lambda x: w3.eth.getTransaction(x).gasPrice)
+df['block_timestamp'] = df['eth_block_number'].apply(lambda x: w3.eth.getBlock(x).timestamp)
+
+print(df.head())
+
+path = os.path.join('data', 'transfers.csv')
+df.to_csv(path, index=False)

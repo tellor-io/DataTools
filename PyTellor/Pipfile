@@ -12,6 +12,7 @@ web3 = "*"
 pandas = "*"
 pylint = "*"
 rusty-rlp = "*"
+tqdm = "*"
 
 [requires]
 python_version = "3.8"

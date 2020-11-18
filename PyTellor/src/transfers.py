@@ -26,9 +26,7 @@ for i in tqdm(range(start_block, last_block, 2000)):
         eth_block_number = j['blockNumber']
         entry = dict(_from=_from, _to=_to,
                      _value=_value, tx_hash=tx_hash,
-                     address=address, eth_block_number=eth_block_number,
-                    #  gas_price=gas_price,
-                    #  block_timestamp=block_timestamp
+                     address=address, eth_block_number=eth_block_number
                      )
         entries.append(entry)
     

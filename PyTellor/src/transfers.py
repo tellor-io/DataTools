@@ -1,4 +1,3 @@
-from itertools import chain
 import os
 import pandas as pd
 import requests
@@ -11,8 +10,6 @@ start_block = 8000000
 last_block = w3.eth.blockNumber
 entries = []
 
-
-# events = transfers.get_all_entries()
 for i in tqdm(range(start_block, last_block, 2000)):
 
     transfers = tellor_core.events.Transfer.createFilter(fromBlock=i, toBlock=i + 2000)
